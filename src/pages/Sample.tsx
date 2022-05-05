@@ -10,6 +10,7 @@ const options: AxiosRequestConfig = {
 export const Sample: React.VFC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [users2, setUsers2] = useState<User[]>([]);
+    const [users3, setUsers3] = useState<User[]>([]);
 
     useEffect(() => {
         axios(options)
@@ -22,6 +23,24 @@ export const Sample: React.VFC = () => {
           console.log(e.message);
         });
     }, [])
+
+    useEffect(() => {
+      const timerId = setInterval(() => onUpdate(), 5000)
+      return () => clearInterval(timerId)
+    }, [])
+
+    function onUpdate() {
+      console.log("定期的に実行してほしい")
+      axios(options)
+        .then((res: AxiosResponse<User[]>) => {
+          const { data } = res;
+          setUsers3(data);
+        })
+        .catch((e: AxiosError<{ error: string }>) => {
+          // エラー処理
+          console.log(e.message);
+        });
+    }
 
     function handleSubmit(e: any) : void {
       e.preventDefault();
@@ -56,6 +75,19 @@ export const Sample: React.VFC = () => {
               <button onClick={handleSubmit}>API呼び出し</button>
               <ul>
                 {users2.map(({ id, name }) => {
+                  return (
+                    <li key={id}>
+                      {id} : {name}
+                    </li>
+                  );
+                })}
+              </ul>    
+            </div>
+            <div>
+              <h2>定期的に実行</h2>
+              <button onClick={handleSubmit}>API呼び出し</button>
+              <ul>
+                {users3.map(({ id, name }) => {
                   return (
                     <li key={id}>
                       {id} : {name}
